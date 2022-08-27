@@ -1,7 +1,5 @@
-import { throws } from "assert";
-import { InvalidParameterError, MissingParameterError } from "../errors";
-import { ServerError } from "../errors/server-error";
-import { IEmailValidator } from "../protocols/email-validation";
+import { InvalidParameterError, MissingParameterError, ServerError } from "../errors";
+import { IEmailValidator } from "../protocols";
 import { SignUpController } from "./signup";
 
 describe('SignUp Controller', () => {
