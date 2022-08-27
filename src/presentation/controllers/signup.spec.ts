@@ -1,5 +1,7 @@
+import { throws } from "assert";
 import { InvalidParameterError } from "../errors/invalid-params-error";
 import { MissingParameterError } from "../errors/missing-params-error";
+import { ServerError } from "../errors/server-error";
 import { IEmailValidator } from "../protocols/email-validation";
 import { SignUpController } from "./signup";
 
@@ -91,6 +93,32 @@ describe('SignUp Controller', () => {
 
     sut.handle(httpRequest);
     expect(isValidSpy).toHaveBeenCalledWith('any_email@email.com');
+  });
+
+  test('Should return 500 if EmailValidation throws', () => {
+    /**
+     * Sobreescreve o sut de mock para que o retorno seja um throw
+     * ---------------------------------------------------------------
+     */
+    class EmailValidationStub implements IEmailValidator {
+      isValid(email: string): boolean { throw new Error(); }
+    }
+    const emailValidationStub = new EmailValidationStub();
+    const sut = new SignUpController(emailValidationStub);
+    //---------------------------------------------------------------
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'invalid_email@email.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password',
+      }
+    }
+
+    const httpResponse = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 })
 
