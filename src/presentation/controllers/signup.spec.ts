@@ -97,10 +97,7 @@ describe('SignUp Controller', () => {
      * Sobreescreve o sut de mock para que o retorno seja um throw
      * ---------------------------------------------------------------
      */
-    class EmailValidationStub implements IEmailValidator {
-      isValid(email: string): boolean { throw new Error(); }
-    }
-    const emailValidationStub = new EmailValidationStub();
+    const emailValidationStub = makeEmailValidatorWithError();
     const sut = new SignUpController(emailValidationStub);
     //---------------------------------------------------------------
 
@@ -124,10 +121,22 @@ interface SutTypes {
 }
 
 const makeSut = (): SutTypes => {
+
+  const emailValidationStub = makeEmailValidator();
+  const sut = new SignUpController(emailValidationStub);
+  return { sut, emailValidationStub };
+}
+
+const makeEmailValidator = (): IEmailValidator => {
   class EmailValidationStub implements IEmailValidator {
     isValid(email: string): boolean { return true }
   }
-  const emailValidationStub = new EmailValidationStub();
-  const sut = new SignUpController(emailValidationStub);
-  return { sut, emailValidationStub };
+  return new EmailValidationStub();
+}
+
+const makeEmailValidatorWithError = (): IEmailValidator => {
+  class EmailValidationStub implements IEmailValidator {
+    isValid(email: string): boolean { throw new Error(); }
+  }
+  return new EmailValidationStub();
 }
