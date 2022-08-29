@@ -1,3 +1,5 @@
+import { Account } from "../../domain/models/account";
+import { AddAccountModel, IAddAccount } from "../../domain/usecase/add-account-use-case";
 import { InvalidParamError, MissingParameterError, ServerError } from "../errors";
 import { IEmailValidator } from "../protocols";
 import { SignUpController } from "./signup";
@@ -125,17 +127,40 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
   });
+
+  test('Should call AddAccount with correct values', () => {
+
+    const { sut, addAccountStub } = makeSut();
+    const addSpy = jest.spyOn(addAccountStub, 'add');
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'invalid_email@email.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password',
+      }
+    }
+
+    sut.handle(httpRequest);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'invalid_email@email.com',
+      password: 'any_password',
+    });
+  });
 })
 
 interface SutTypes {
-  sut: SignUpController, emailValidationStub: IEmailValidator
-}
+  sut: SignUpController, emailValidationStub: IEmailValidator, addAccountStub: IAddAccount
+};
 
 const makeSut = (): SutTypes => {
 
   const emailValidationStub = makeEmailValidator();
-  const sut = new SignUpController(emailValidationStub);
-  return { sut, emailValidationStub };
+  const addAccountStub = makeAddAccount();
+  const sut = new SignUpController(emailValidationStub, addAccountStub);
+  return { sut, emailValidationStub, addAccountStub };
 }
 
 const makeEmailValidator = (): IEmailValidator => {
@@ -143,5 +168,20 @@ const makeEmailValidator = (): IEmailValidator => {
     isValid(email: string): boolean { return true }
   }
   return new EmailValidationStub();
+}
+
+const makeAddAccount = (): IAddAccount => {
+  class AddAccountStub implements IAddAccount {
+    add(account: AddAccountModel): Account {
+      const fakeAccount = {
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'validemail@email.com',
+        password: 'password_valid'
+      }
+      return fakeAccount;
+    }
+  }
+  return new AddAccountStub();
 }
 
