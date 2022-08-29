@@ -9,7 +9,7 @@ export class SignUpController implements IController {
     this.emailValidation = emailValidation
     this.addAccount = addAccount
   }
-  handle(httpResponse: HttpRequest): HttpResponse {
+  async handle(httpResponse: HttpRequest): Promise<HttpResponse> {
     try {
       const { name, email, password, passwordConfirmation } = httpResponse.body;
       const requiredFields = ['name', 'email', 'password', 'passwordConfirmation'];
@@ -28,8 +28,8 @@ export class SignUpController implements IController {
         return badRequest(new InvalidParamError('email'));
       }
 
-      const account = this.addAccount.add({ name, email, password, });
-      return ok(account);
+      const account = await this.addAccount.add({ name, email, password, });
+      return Promise.resolve(ok(account));
 
     } catch (error) {
       return serverError();
