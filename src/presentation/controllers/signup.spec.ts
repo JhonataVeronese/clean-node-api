@@ -1,7 +1,5 @@
-import { Account } from "../../domain/models/account";
-import { AddAccountModel, IAddAccount } from "../../domain/usecase/add-account-use-case";
 import { InvalidParamError, MissingParameterError, ServerError } from "../errors";
-import { IEmailValidator } from "../protocols";
+import { IEmailValidator, Account, AddAccountModel, IAddAccount } from "./signup/signup-protocols";
 import { SignUpController } from "./signup";
 
 describe('SignUp Controller', () => {
