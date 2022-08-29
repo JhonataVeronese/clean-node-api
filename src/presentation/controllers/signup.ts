@@ -1,5 +1,5 @@
 import { InvalidParamError, MissingParameterError } from "../errors";
-import { badRequest, serverError } from "../helpers/http-helper";
+import { ok, badRequest, serverError } from "../helpers/http-helper";
 import { IEmailValidator, IAddAccount, IController, HttpResponse, HttpRequest } from "./signup/signup-protocols";
 export class SignUpController implements IController {
   private readonly emailValidation: IEmailValidator;
@@ -29,10 +29,7 @@ export class SignUpController implements IController {
       }
 
       const account = this.addAccount.add({ name, email, password, });
-      return {
-        statusCode: 200,
-        body: account
-      }
+      return ok(account);
 
     } catch (error) {
       return serverError();
