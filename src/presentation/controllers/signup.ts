@@ -9,6 +9,7 @@ export class SignUpController implements IController {
   }
   handle(httpResponse: HttpRequest): HttpResponse {
     try {
+      const { email, password, passwordConfirmation } = httpResponse.body;
       const requiredFields = ['name', 'email', 'password', 'passwordConfirmation'];
       for (const field of requiredFields) {
         if (!httpResponse.body[field]) {
@@ -16,11 +17,11 @@ export class SignUpController implements IController {
         }
       }
 
-      if (httpResponse.body.password !== httpResponse.body.passwordConfirmation) {
+      if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'));
       }
 
-      const isValid = this.emailValidation.isValid(httpResponse.body.email);
+      const isValid = this.emailValidation.isValid(email);
       if (!isValid) {
         return badRequest(new InvalidParamError('email'));
       }
