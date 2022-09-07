@@ -1,4 +1,4 @@
-import { EmailValidationAdapter } from "./email-validator";
+import { EmailValidationAdapter } from "./email-validator-adapter";
 import validator from "validator";
 import { IEmailValidator } from "../presentation/protocols/email-validation";
 
